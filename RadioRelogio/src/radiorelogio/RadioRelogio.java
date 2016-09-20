@@ -10,6 +10,8 @@ import java.awt.FontFormatException;
 import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.IOException;
+import javax.swing.DefaultListModel;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 
 /**
@@ -20,30 +22,54 @@ public class RadioRelogio extends JFrame {
 
     private Relogio relogio;
     private Radio radio;
-    
-    
+
     /**
      * Creates new form RadioRelogio
      */
+    public File[] escolherArquivos() {
+        File[] arquivos = null;
+        final JFileChooser fc = new JFileChooser();
+        fc.setMultiSelectionEnabled(true);
+        int returnVal = fc.showOpenDialog(null);
+
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            arquivos = fc.getSelectedFiles();
+        }
+
+        return arquivos;
+    }
+
     public RadioRelogio() {
-        
+
         try {
             GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
             ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("alarmclock.ttf")));
         } catch (IOException | FontFormatException e) {
             e.printStackTrace();
         }
-        
-        initComponents();
 
-        relogio = new Relogio(labelRelogio);
+        initComponents();
+        
+        File[] musicas = escolherArquivos();
+        
+        DefaultListModel<String> dlm = new DefaultListModel<>();
+        dlm.addElement("prrrar");
+        jListMusicas.setModel(dlm);
+        
+        if(musicas != null){
+            for(File musica : musicas){
+ 
+            }
+        }
+
+        /*relogio = new Relogio(labelRelogio);
         relogio.mostrarData(false);
         Thread relogioThread = new Thread(relogio);
         relogioThread.start();
         
         radio = new Radio();
         Thread radioThread = new Thread(radio);
-        radioThread.start();
+        radioThread.start();*/
     }
 
     /**
@@ -57,7 +83,7 @@ public class RadioRelogio extends JFrame {
 
         labelRelogio = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jList2 = new javax.swing.JList<>();
+        jListMusicas = new javax.swing.JList<>();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jToggleButton1 = new javax.swing.JToggleButton();
@@ -68,13 +94,8 @@ public class RadioRelogio extends JFrame {
         labelRelogio.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         labelRelogio.setText("00:00:00");
 
-        jList2.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
-        jList2.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        jScrollPane2.setViewportView(jList2);
+        jListMusicas.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jScrollPane2.setViewportView(jListMusicas);
 
         jButton1.setText("jButton1");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -175,7 +196,7 @@ public class RadioRelogio extends JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
-    private javax.swing.JList<String> jList2;
+    private javax.swing.JList<String> jListMusicas;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JToggleButton jToggleButton1;
     private javax.swing.JLabel labelRelogio;
