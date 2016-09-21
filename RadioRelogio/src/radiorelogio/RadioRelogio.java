@@ -10,8 +10,12 @@ import java.awt.FontFormatException;
 import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.concurrent.ExecutorService;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -29,6 +33,7 @@ public class RadioRelogio extends JFrame {
     Tocar tocar = new Tocar();
     Thread tocarThread = null;
     ExecutorService executor;
+    String[] horaPartida;
 
     /**
      * Creates new form RadioRelogio
@@ -71,17 +76,17 @@ public class RadioRelogio extends JFrame {
     }
 
     public void tocarMusica(String musica) {
-            try {
-                tocar.setMusica(musica);
+        try {
+            tocar.setMusica(musica);
 
-                if (!tocar.isTocando()) {
-                    tocar();
-                } else {
-                    parar();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+            if (!tocar.isTocando()) {
+                tocar();
+            } else {
+                parar();
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public RadioRelogio() {
@@ -104,6 +109,49 @@ public class RadioRelogio extends JFrame {
         data.mostrarData(true);
         Thread dataThread = new Thread(data);
         dataThread.start();
+
+        Runnable r = new Runnable() {
+
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+            Date d = new Date();
+
+            @Override
+            public void run() {
+                try {
+                    while (true) {
+                        horaPartida = labelRelogio.getText().split(":");
+                        if (horaPartida[1].equals("13") && horaPartida[2].equals("00")) {
+                            if (tocar.isTocando()) {
+                                while (tocar.isTocando()) {
+                                    try {
+                                        System.out.println("tocando");
+                                        Thread.sleep(1000);
+                                    } catch (InterruptedException ex) {
+                                        Logger.getLogger(RadioRelogio.class.getName()).log(Level.SEVERE, null, ex);
+                                    }
+                                }
+                                falar.setFalando(true);
+                                Thread falarThread = new Thread(falar);
+                                falar.setHora(labelRelogio.getText());
+                                falarThread.start();
+                            } else {
+                                falar.setFalando(true);
+                                Thread falarThread = new Thread(falar);
+                                falar.setHora(labelRelogio.getText());
+                                falarThread.start();
+                            }
+                        }
+                        labelRelogio.revalidate();
+                        Thread.sleep(1000);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        new Thread(r).start();
+
     }
 
     /**

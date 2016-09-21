@@ -52,5 +52,4 @@ public class Falar implements Runnable {
         falando = false;
         
     }
-
 }

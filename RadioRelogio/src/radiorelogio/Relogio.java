@@ -45,7 +45,7 @@ public class Relogio implements Runnable {
                     this.hr.setText(sdf.format(d));
                     Thread.sleep(1000);
                     this.hr.revalidate();
-                    horaPartida = this.hr.getText().split(":");
+                    /*horaPartida = this.hr.getText().split(":");
                     if (horaPartida[1].equals("00") && horaPartida[2].equals("00")) {
                         if (!falar.getFalando()) {
                             falar.setFalando(true);
@@ -53,7 +53,7 @@ public class Relogio implements Runnable {
                             falar.setHora(sdf.format(d));
                             falarThread.start();
                         }
-                    }
+                    }*/
                 }
             }
         } catch (Exception ex) {
