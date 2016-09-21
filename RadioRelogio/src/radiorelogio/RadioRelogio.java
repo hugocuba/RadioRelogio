@@ -8,8 +8,10 @@ package radiorelogio;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.GraphicsEnvironment;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -20,23 +22,39 @@ import javax.swing.JFrame;
  */
 public class RadioRelogio extends JFrame {
 
-    private Relogio relogio;
+    private final Relogio relogio;
     private Radio radio;
+    Falar falar = new Falar();
+    DefaultListModel<String> dlm = new DefaultListModel<>();
 
     /**
      * Creates new form RadioRelogio
      */
-    public File[] escolherArquivos() {
-        File[] arquivos = null;
+    public void escolherArquivos() {
+        File[] arquivos;
         final JFileChooser fc = new JFileChooser();
         fc.setMultiSelectionEnabled(true);
         int returnVal = fc.showOpenDialog(null);
 
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             arquivos = fc.getSelectedFiles();
+            
+            
+            for(File arquivo : arquivos){
+                dlm.addElement(arquivo.getName());
+            }
+            
+            jListMusicas.setModel(dlm);
         }
+    }
 
-        return arquivos;
+    public void falarHora() {
+        if (!falar.getFalando()) {
+            falar.setFalando(true);
+            Thread falarThread = new Thread(falar);
+            falar.setHora(this.labelRelogio.getText());
+            falarThread.start();
+        }
     }
 
     public RadioRelogio() {
@@ -50,26 +68,10 @@ public class RadioRelogio extends JFrame {
 
         initComponents();
         
-        File[] musicas = escolherArquivos();
-        
-        DefaultListModel<String> dlm = new DefaultListModel<>();
-        dlm.addElement("prrrar");
-        jListMusicas.setModel(dlm);
-        
-        if(musicas != null){
-            for(File musica : musicas){
- 
-            }
-        }
-
-        /*relogio = new Relogio(labelRelogio);
+        relogio = new Relogio(labelRelogio);
         relogio.mostrarData(false);
         Thread relogioThread = new Thread(relogio);
         relogioThread.start();
-        
-        radio = new Radio();
-        Thread radioThread = new Thread(radio);
-        radioThread.start();*/
     }
 
     /**
@@ -87,31 +89,56 @@ public class RadioRelogio extends JFrame {
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jToggleButton1 = new javax.swing.JToggleButton();
+        jButtonFalar = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        labelRelogio.setFont(new Font("alarm clock", Font.PLAIN, 60));
-        labelRelogio.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        labelRelogio.setFont(new Font("alarm clock", Font.PLAIN, 80));
+        labelRelogio.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         labelRelogio.setText("00:00:00");
 
-        jListMusicas.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jListMusicas.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jListMusicasMouseClicked(evt);
+            }
+        });
+        jListMusicas.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jListMusicasKeyPressed(evt);
+            }
+        });
         jScrollPane2.setViewportView(jListMusicas);
 
-        jButton1.setText("jButton1");
+        jButton1.setText("<<");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
             }
         });
 
-        jButton2.setText("jButton2");
+        jButton2.setText(">>");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton2ActionPerformed(evt);
             }
         });
 
-        jToggleButton1.setText("jToggleButton1");
+        jToggleButton1.setText(">");
+
+        jButtonFalar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/radiorelogio/icon-speaker.gif"))); // NOI18N
+        jButtonFalar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonFalarActionPerformed(evt);
+            }
+        });
+
+        jButton3.setText("...");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -122,31 +149,37 @@ public class RadioRelogio extends JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane2)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(90, 90, 90)
-                                .addComponent(jButton1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jToggleButton1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButton2))
-                            .addComponent(labelRelogio, javax.swing.GroupLayout.PREFERRED_SIZE, 397, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 37, Short.MAX_VALUE)))
+                        .addGap(21, 21, 21)
+                        .addComponent(labelRelogio, javax.swing.GroupLayout.PREFERRED_SIZE, 349, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButtonFalar)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jButton1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jToggleButton1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton3)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(labelRelogio, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(58, 58, 58)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(labelRelogio, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButtonFalar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
                     .addComponent(jButton2)
-                    .addComponent(jToggleButton1))
-                .addContainerGap(80, Short.MAX_VALUE))
+                    .addComponent(jToggleButton1)
+                    .addComponent(jButton3))
+                .addContainerGap(127, Short.MAX_VALUE))
         );
 
         pack();
@@ -159,6 +192,30 @@ public class RadioRelogio extends JFrame {
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
 
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButtonFalarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonFalarActionPerformed
+        falarHora();
+    }//GEN-LAST:event_jButtonFalarActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        escolherArquivos();
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jListMusicasKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jListMusicasKeyPressed
+        if(evt.getKeyCode() == 127){
+            int[] indices = jListMusicas.getSelectedIndices();
+            for(int i = indices.length - 1; i >= 0; i--){
+                dlm.removeElementAt(indices[i]);
+            }
+            
+        }
+    }//GEN-LAST:event_jListMusicasKeyPressed
+
+    private void jListMusicasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jListMusicasMouseClicked
+        if(evt.getClickCount() == 2){
+            System.out.println("ok");
+        }
+    }//GEN-LAST:event_jListMusicasMouseClicked
 
     /**
      * @param args the command line arguments
@@ -196,6 +253,8 @@ public class RadioRelogio extends JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButtonFalar;
     private javax.swing.JList<String> jListMusicas;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JToggleButton jToggleButton1;

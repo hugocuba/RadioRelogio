@@ -17,6 +17,7 @@ public class Relogio implements Runnable {
 
     private JLabel hr;
     private boolean mostrarData;
+    String[] horaPartida;
 
     public Relogio(JLabel hora) {
         this.hr = hora;
@@ -35,14 +36,22 @@ public class Relogio implements Runnable {
                 if (mostrarData) {
                     SimpleDateFormat sdfData = new SimpleDateFormat("dd.MM.yyyy");
                     data.append(sdfData.format(d));
-                    data.append(" - ");
+                    this.hr.setText(data.toString());
+                    Thread.sleep(1000);
+                    this.hr.revalidate();
+                } else {
+                    SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+                    this.hr.setText(sdf.format(d));
+                    Thread.sleep(1000);
+                    this.hr.revalidate();
+
+                    horaPartida = this.hr.getText().split(":");
+                    if (horaPartida[1].equals("00")) {
+                        System.out.println("ok");
+                    }
                 }
-                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-                this.hr.setText(data.toString() + sdf.format(d));
-                Thread.sleep(1000);
-                this.hr.revalidate();
             }
-        } catch (InterruptedException ex) {
+        } catch (Exception ex) {
             System.out.println("Problema na atualização da data/hora");
             ex.printStackTrace();
         }

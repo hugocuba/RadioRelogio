@@ -18,7 +18,7 @@ public class Radio implements Runnable {
     @Override
     public void run() {
         try {
-            FileInputStream fis = new FileInputStream("Striaaker.mp3");
+            FileInputStream fis = new FileInputStream("Gui/02 - Joker.mp3");
             Player playMP3 = new Player(fis);
             playMP3.play();
 
