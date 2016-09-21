@@ -5,6 +5,7 @@
  */
 package radiorelogio;
 
+import javazoom.jl.player.advanced.Player;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import javazoom.jl.decoder.JavaLayerException;
@@ -47,7 +48,9 @@ public class Falar implements Runnable {
             } catch (FileNotFoundException | JavaLayerException exc) {
                 exc.printStackTrace();
         }
+            
         falando = false;
+        
     }
 
 }

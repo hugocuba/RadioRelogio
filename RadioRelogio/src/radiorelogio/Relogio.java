@@ -18,7 +18,8 @@ public class Relogio implements Runnable {
     private JLabel hr;
     private boolean mostrarData;
     String[] horaPartida;
-
+    Falar falar = new Falar();
+    
     public Relogio(JLabel hora) {
         this.hr = hora;
     }
@@ -34,7 +35,7 @@ public class Relogio implements Runnable {
                 Date d = new Date();
                 StringBuilder data = new StringBuilder();
                 if (mostrarData) {
-                    SimpleDateFormat sdfData = new SimpleDateFormat("dd.MM.yyyy");
+                    SimpleDateFormat sdfData = new SimpleDateFormat("EEE, d 'de' MMMMM 'de' yyyy");
                     data.append(sdfData.format(d));
                     this.hr.setText(data.toString());
                     Thread.sleep(1000);
@@ -44,10 +45,14 @@ public class Relogio implements Runnable {
                     this.hr.setText(sdf.format(d));
                     Thread.sleep(1000);
                     this.hr.revalidate();
-
                     horaPartida = this.hr.getText().split(":");
-                    if (horaPartida[1].equals("00")) {
-                        System.out.println("ok");
+                    if (horaPartida[1].equals("00") && horaPartida[2].equals("00")) {
+                        if (!falar.getFalando()) {
+                            falar.setFalando(true);
+                            Thread falarThread = new Thread(falar);
+                            falar.setHora(sdf.format(d));
+                            falarThread.start();
+                        }
                     }
                 }
             }

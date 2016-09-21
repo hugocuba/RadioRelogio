@@ -18,7 +18,7 @@
  *----------------------------------------------------------------------
  */
 
-package radiorelogio;
+package javazoom.jl.player.advanced;
 
 import java.io.InputStream;
 
